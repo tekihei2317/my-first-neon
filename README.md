@@ -21,3 +21,34 @@ Prismaではこれを防ぐためのData Proxyというサービスがあるが�
 ## やってみる
 
 ![](https://i.gyazo.com/654207d3fe2fa2804da9db42c9c15465.png)
+
+バインディングとは、Workersに紐づけられたサービスなどのこと。バインディングには、KV、Queue、D1、環境変数などがある。
+
+Neonのプロジェクトを作ってみると、Pooled connectionとDirect connectionの2つが確認できる。とりあえずDirect connectionを使ってみることにした。
+
+drizzleのスキーマ定義、TypeScriptのフィールド名と、データベースのカラム名をマッピングできるのがいいなと思った。
+
+生成されたマイグレーションファイルは次のとおり。`CREATE TABLE IF NOT EXISTS`になっているのが気になる。毎回全てのマイグレーションを実行するのだろうか。
+
+```sql
+CREATE TABLE IF NOT EXISTS "products" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" text,
+	"description" text,
+	"price" double precision
+);
+```
+
+`process`の型定義が見つからないというエラーになる。@types/nodeをインストールする必要があるのかなと思ったけれど、完成版のリポジトリには追加されていない。
+
+`dotenv`をインストールしていないのが原因だった。使わないけどとりあえずインストールしておく。`dotenv`をインポートしたら、そのファイルで`process`が使えるようになるみたいだった。どういう型定義を書いているのか後で見てみる。
+
+Workersから環境変数`DATABASE_URL`を読み取れなくて、`undefined`になっています。プロセスに設定しているのですが、ダメそうでした。どこに設定すればいいのでしょうか。
+
+wranglerでは、シークレットは`dev.vars`に設定するようでした。設定してから再起動すると、読み込まれているというメッセージがターミナルに表示されました。
+
+デプロイは成功したものの、ページにアクセスすると次のようなエラーになりました。
+
+![](https://i.gyazo.com/b8d6083682849cdfc0aa4e8a657e0263.png)
+
+これは時間が経過すると直りました。
