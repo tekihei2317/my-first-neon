@@ -28,7 +28,12 @@ app.get('/', async (c) => {
     const client = new Pool({ connectionString: c.env.DATABASE_URL });
     const db = drizzle(client);
 
-    const result = await db.select().from(products);
+    const result = await db
+      .select({
+        id: products.id,
+        price: products.price,
+      })
+      .from(products);
 
     return c.json({
       result,

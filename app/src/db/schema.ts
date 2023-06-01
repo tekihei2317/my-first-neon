@@ -6,3 +6,8 @@ export const products = pgTable('products', {
   description: text('description'),
   price: doublePrecision('price'),
 });
+
+export const users = pgTable('users', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+});
